@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using RedisPatterns.API.Middleware;
 using RedisPatterns.Application.Interfaces;
 using RedisPatterns.Application.Services;
 using RedisPatterns.Infrastructure.Data;
@@ -14,6 +15,7 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(
 
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IProductPurchaseService, ProductPurchaseService>();
+builder.Services.AddScoped<IRateLimiterService, RateLimiterService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -22,6 +24,8 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
+
+app.UseMiddleware<RateLimitingMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
